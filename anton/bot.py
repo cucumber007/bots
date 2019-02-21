@@ -3,10 +3,12 @@ import json
 from telegram.ext import Updater, CallbackQueryHandler, MessageHandler, Filters
 from telegram.ext import CommandHandler
 
+from collections import defaultdict
+
 
 class Bot:
 
-    chat_messages = {}
+    chat_messages = defaultdict(list)
 
     def run(self):
         with open("../local-properties.json", "r") as f:
@@ -23,14 +25,13 @@ class Bot:
     def message(self, bot, update, *kwargs):
         try:
             chat_id = update.effective_chat.id
-            # print(update.message.text, chat_id, update.message.from_user['username'])
-            if not chat_id in self.chat_messages:
-                self.chat_messages[chat_id] = []
+            messages = self.chat_messages[chat_id]
 
-            if len(self.chat_messages[chat_id]) > 5:
-                self.chat_messages[chat_id].pop(0)
-            self.chat_messages[chat_id].append(update.message)
-            if self.check_violation(self.chat_messages[chat_id]):
+            if len(messages) > 5:
+                messages.pop(0)
+            messages.append(update.message)
+            
+            if self.check_violation(messages[chat_id]):
                 update.message.reply_text("Антон блять!")
         except Exception as e:
             update.message.reply_text("Ошибочка: " + str(e))
