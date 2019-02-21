@@ -6,7 +6,7 @@ from telegram.ext import CommandHandler
 
 class Bot:
 
-    last_messages = []
+    chat_messages = {}
 
     def run(self):
         with open("../local-properties.json", "r") as f:
@@ -22,10 +22,15 @@ class Bot:
 
     def message(self, bot, update, *kwargs):
         try:
-            if len(self.last_messages) > 5:
-                self.last_messages.pop(0)
-            self.last_messages.append(update.message)
-            if self.check_violation(self.last_messages):
+            chat_id = update.effective_chat.id
+            # print(update.message.text, chat_id, update.message.from_user['username'])
+            if not chat_id in self.chat_messages:
+                self.chat_messages[chat_id] = []
+
+            if len(self.chat_messages[chat_id]) > 5:
+                self.chat_messages[chat_id].pop(0)
+            self.chat_messages[chat_id].append(update.message)
+            if self.check_violation(self.chat_messages[chat_id]):
                 update.message.reply_text("Антон блять!")
         except Exception as e:
             update.message.reply_text("Ошибочка: " + str(e))
@@ -33,11 +38,11 @@ class Bot:
     def check_violation(self, messages):
         if len(messages) < 4:
             return False
-        user = messages[0].from_user['id']
+        user = messages[0].from_user['username']
         for message in messages:
             if len(message.text) > 30:
                 return False
-            if message.from_user['id'] != user:
+            if message.from_user['username'] != user:
                 return False
         return True
 
