@@ -31,7 +31,7 @@ class Bot:
                 self.chat_messages[chat_id].pop(0)
             self.chat_messages[chat_id].append(update.message)
             if self.check_violation(self.chat_messages[chat_id]):
-                update.message.reply_text("Антон блять!")
+                update.message.delete()
         except Exception as e:
             update.message.reply_text("Ошибочка: " + str(e))
 
