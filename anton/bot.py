@@ -9,7 +9,7 @@ class Bot:
     chat_messages = {}
 
     def run(self):
-        with open("../local-properties.json", "r") as f:
+        with open("local-properties.json", "r") as f:
             token = json.loads(f.read())["anton"]
         updater = Updater(token=token)
         dispatcher = updater.dispatcher
